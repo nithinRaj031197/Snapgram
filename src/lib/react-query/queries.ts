@@ -1,15 +1,19 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   createPost,
   createUserAccount,
   deletePost,
   deleteSavedPost,
   getCurrentUser,
+  getInfinitePosts,
   getPostById,
   getRecentPosts,
+  getUserById,
   getUserPosts,
+  getUsers,
   likePost,
   savePost,
+  searchPosts,
   signInAccount,
   signOutAccount,
   updatePost,
@@ -155,5 +159,47 @@ export const useDeletePost = () => {
         queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
       });
     },
+  });
+};
+
+export const useGetPosts = () => {
+  return useInfiniteQuery({
+    queryKey: [QUERY_KEYS.GET_INFINITE_POSTS],
+    queryFn: getInfinitePosts as any,
+    getNextPageParam: (lastPage: any) => {
+      // If there's no data, there are no more pages.
+      if (lastPage && lastPage.documents.length === 0) {
+        return null;
+      }
+
+      // Use the $id of the last document as the cursor.
+      const lastId = lastPage.documents[lastPage.documents.length - 1].$id;
+      return lastId;
+    },
+    // Add the initialPageParam property with a value, if applicable.
+    initialPageParam: null, // You may set it to an appropriate value if needed.
+  });
+};
+
+export const useSearchPosts = (searchTerm: string) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.SEARCH_POSTS, searchTerm],
+    queryFn: () => searchPosts(searchTerm),
+    enabled: !!searchTerm,
+  });
+};
+
+export const useGetUserById = (userId: string) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.GET_USER_BY_ID, userId],
+    queryFn: () => getUserById(userId),
+    enabled: !!userId,
+  });
+};
+
+export const useGetUsers = (limit?: number) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.GET_USERS],
+    queryFn: () => getUsers(limit),
   });
 };

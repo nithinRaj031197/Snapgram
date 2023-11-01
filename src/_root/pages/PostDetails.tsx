@@ -6,6 +6,7 @@ import { useUserContext } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import Loader from "@/components/shared/Loader";
 import PostStats from "@/components/shared/PostStats";
+import GridPostList from "@/components/shared/GridPostList";
 
 const PostDetails = () => {
   const navigate = useNavigate();
@@ -94,12 +95,7 @@ const PostDetails = () => {
         <hr className="border w-full border-dark-4/80" />
 
         <h3 className="body-bold md:h3-bold w-full my-10">More Related Posts</h3>
-        {isUserPostLoading || !relatedPosts ? (
-          <Loader />
-        ) : (
-          // <GridPostList posts={relatedPosts} />
-          <></>
-        )}
+        {isUserPostLoading || !relatedPosts ? <Loader /> : <GridPostList posts={relatedPosts} />}
       </div>
     </div>
   );
